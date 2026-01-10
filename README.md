@@ -6,7 +6,7 @@ Code examples for learning haskell
 
 ## Course
 
-### Yorgey's cis1940 course
+### Yorgey's cis194 course
 
 Available [online](https://www.seas.upenn.edu/~cis1940/spring13/lectures.html).
 

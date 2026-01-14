@@ -1,6 +1,9 @@
 module JoinList where
 
+import Buffer
 import Data.Monoid
+import Editor (editor, runEditor)
+import Scrabble
 import Sized
 
 data JoinList m a
@@ -75,3 +78,30 @@ takeJ n jl
       | n < len l = takeJ n l
       | n < len jl = (+++) l $ takeJ (n - len l) r
       | otherwise = jl
+
+scoreLine :: String -> JoinList Score String
+scoreLine s = Single (scoreString s) s
+
+type JLB = JoinList (Score, Size) String
+
+instance Buffer JLB where
+  toString Empty = mempty
+  toString (Single _ s) = s
+  toString (Append _ l r) = toString l ++ toString r
+  fromString = foldr f (Empty :: JLB) . lines
+    where
+      f a b = single a +++ b
+      single s = Single (scoreString s, Size 1) s
+  line = indexJ
+  replaceLine n s jl = takeJ n jl +++ fromString s +++ dropJ (n + 1) jl
+  numLines = getSize . snd . tag
+  value = getScore . fst . tag
+
+strToJLB :: String -> JLB
+strToJLB = fromString
+
+exJlb = foldr f Empty ["JoinListBuf", "line1", "line2"]
+  where
+    f a b = strToJLB a +++ b
+
+main = runEditor editor exJlb

@@ -71,10 +71,8 @@ instance Applicative Parser where
   (Parser pf) <*> (Parser px) = Parser f
     where
       f s
-        | Nothing <- prev = Nothing
-        | Just (f, s') <- prev = first f <$> px s'
-        where
-          prev = pf s
+        | Just (f, s') <- pf s = first f <$> px s'
+        | otherwise = Nothing
 
 type Name = String
 
